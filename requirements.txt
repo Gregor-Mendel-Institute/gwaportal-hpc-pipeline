@@ -1,0 +1,4 @@
+celery == 4.3.0
+fabric ==2.5.0
+requests ==2.22.0
+h5py == 2.10.0

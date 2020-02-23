@@ -14,13 +14,13 @@ setup(
     long_description=readme,
     author='Uemit Seren',
     author_email='uemit.seren@gmi.oeaw.ac.at',
-    url='https://github.com/https://github.com/Gregor-Mendel-Institute/gwaportal-hpc-pipeline',
+    url='https://github.com/Gregor-Mendel-Institute/gwaportal-hpc-pipeline',
     license=license,
     keywords='GWAS',
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=[
         "celery >= 4.3.0",
-	"fabric >=2.5.0",
+	    "fabric >=2.5.0",
         "requests >=2.22.0",
         "h5py >= 2.10",
     ]
