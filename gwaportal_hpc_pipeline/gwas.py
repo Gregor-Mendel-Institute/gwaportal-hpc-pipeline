@@ -7,7 +7,12 @@ from . import fabfile as hpc
 
 logger = get_task_logger(__name__)
 
-c = Connection(hpc.hosts[0])
+connect_kwargs=None
+
+if hpc.SSH_KEY_FILENAME:
+    connect_kwargs = { "key_filename": hpc.SSH_KEY_FILENAME}
+
+c = Connection(hpc.hosts[0], user=hpc.HPC_USER, connect_kwargs=connect_kwargs)
 
 @app.task(serializer='json')
 def start_gwas(studyid):
