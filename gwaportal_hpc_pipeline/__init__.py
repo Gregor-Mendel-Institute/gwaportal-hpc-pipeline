@@ -1,6 +1,7 @@
 from .rest import Restclient
 import os
 
+HPC_HOST = os.environ['HPC_HOST']
 REST_HOST = os.environ['REST_HOST']
 REST_USERNAME = os.environ['REST_USERNAME']
 REST_PASSWORD = os.environ['REST_PASSWORD']

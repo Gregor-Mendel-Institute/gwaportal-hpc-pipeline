@@ -12,7 +12,7 @@ WORKDIR='/scratch-cbe/users/%s/GWASDATA' % USER
 
 logger = logging.getLogger(__name__)
 
-hosts = ["hpc"]
+hosts = [HPC_HOST]
 
 def _get_folders(study_id):
     data_folder = os.path.join(WORKDIR, str(study_id))
@@ -52,7 +52,7 @@ def stage_out_result(c, job_id, study_id):
     error_file_size = c.run('stat -c \'%s\' {0}'.format(error_filename), warn=True)
     if error_file_size.failed or int(error_file_size.stdout) > 0:
         return "FAILED"
-    
+
     output_filename = os.path.join(output_folder, "%s.hdf5" % study_id)
     output_file_size = c.run('stat -c \'%s\' {0}'.format(output_filename), warn=True)
     if output_file_size.failed or int(output_file_size.stdout) == 0:
@@ -61,7 +61,7 @@ def stage_out_result(c, job_id, study_id):
     c.get(output_filename, os.path.join(STUDY_DATA_FOLDER, '%s.hdf5' % str(study_id)))
     c.run("rm -rf %s" % os.path.join(WORKDIR, str(study_id)))
     return "DONE"
-    
+
 @task(hosts=hosts)
 def check_job_state(c, job_id,study_id):
     try:
@@ -69,34 +69,34 @@ def check_job_state(c, job_id,study_id):
         check_cmd = "sacct -j %s.batch -o state -pn" % job_id
         check_output = c.run(check_cmd)
         status = check_output.stdout.strip()
-        if status == "": 
+        if status == "":
             status = "RUNNING"
         else:
             status = status[:-1]
-        logger.info('Job state is %s' % status) 
+        logger.info('Job state is %s' % status)
         if status == "COMPLETED":
           status = stage_out_result(c, job_id, study_id)
         elif status in ("CANCELED", "OUT_OF_MEMORY"):
           status = "Failed"
-        return status 
+        return status
     except Exception as err:
         logger.exception("Failed to check exception")
         raise err
-        
+
 
 @task(hosts=hosts)
-def submit_gwas(c,study_id):     
+def submit_gwas(c,study_id):
     input_folder, output_folder, log_folder = _get_folders(study_id)
-    data = stage_in_phenotype(c,study_id) 
+    data = stage_in_phenotype(c,study_id)
     logger.info("Submit GWAS analysis")
     analysis = data['analysisMethod']
     genotype = data['genotype']
     transformation = data['transformation']
     runtime = round((data['runtime'] + data['runtime']*0.5)/60)
     runtime = max(runtime,10)
-    params = {"time": runtime, "name": "GWA_%s" % study_id, 
-              "workdir": log_folder, "id":study_id, 
-              "analysis": analysis.lower(), 
+    params = {"time": runtime, "name": "GWA_%s" % study_id,
+              "workdir": log_folder, "id":study_id,
+              "analysis": analysis.lower(),
               "genotype": genotype,
               "script": GWAS_SCRIPT
              }
