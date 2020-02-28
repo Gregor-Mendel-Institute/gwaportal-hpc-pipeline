@@ -7,7 +7,7 @@ from . import fabfile as hpc
 
 logger = get_task_logger(__name__)
 
-c = Connection("hpc")
+c = Connection(hpc.hosts[0])
 
 @app.task(serializer='json')
 def start_gwas(studyid):
